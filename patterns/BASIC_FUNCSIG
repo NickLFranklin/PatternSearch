@@ -1,0 +1,4 @@
+select DISTINCT FROM_ADDRESS from arbitrum.core.fact_traces
+where (SUBSTRING(input, 1, 10) = 'func_sig')
+and TYPE != 'DELEGATECALL'
+and block_timestamp > current_date - interval '30 days'
