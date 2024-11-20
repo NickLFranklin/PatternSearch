@@ -1,22 +1,32 @@
 const { Flipside } = require("@flipsidecrypto/sdk");
+const requireFromUrl = require('require-from-url/sync');
 const fs = require( 'fs' );
-const path = require('path');
+
+const modes = {
+    BASIC_FUNCSIG: 0,
+    FUNC_AFTER_FUNC: 1,
+    //...
+};
 
 async function main(){
     const prompt = require('prompt-sync')();
-    const funcSig = prompt('Input function signature: ');
+    const pattern_url = prompt('Input pattern url: ');
+    const funcSig1 = prompt('Input function first signature: ');
+    const funcSig2 = prompt('Input function second signature: ');
 
-    const patternPath = path.join(__dirname, 'patterns/BASIC_FUNCSIG');
-    const pattern = fs.readFileSync(patternPath, 'utf8');
-
+    const Patterns = requireFromUrl(pattern_url);
+    const patterns = new Patterns();
+    
     // Initialize `Flipside` with your API key
     const flipside = new Flipside(
-      "1db0d506-ae07-43a5-8c52-f5204121aa11",
+      "47d52848-9762-4751-b55b-b5e9678e2773",
       "https://api-v2.flipsidecrypto.xyz"
     );
-
-    const sql = pattern.replace('func_sig', funcSig);
-
+    
+    var sql = patterns.getPattern(modes.FUNC_AFTER_FUNC);
+    sql = sql.replace('func_sig1', funcSig1);
+    sql = sql.replace('func_sig2', funcSig2);
+    console.log(sql);
     // Send the `Query` to Flipside's query engine and await the results
     const queryResultSet = await flipside.query.run({sql: sql});
     console.log(queryResultSet)
